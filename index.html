@@ -1,0 +1,2580 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="theme-color" content="#071f4e" />
+  <meta name="description" content="Una carta de amor interactiva inspirada en el océano." />
+  <title>Carta de amor · Océano</title>
+
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Dancing+Script:wght@500;600;700&family=DM+Sans:wght@400;500;600;700&display=swap');
+
+    :root {
+      --navy-950: #04142f;
+      --navy-900: #071f4e;
+      --navy-800: #0a2d67;
+      --blue: #1677ba;
+      --cyan: #54d6df;
+      --aqua: #9bf4ee;
+      --ice: #ecfdff;
+      --white: #ffffff;
+      --ink: #0c2447;
+      --muted: #5c7493;
+      --line: rgba(47, 142, 183, .2);
+      --shadow: 0 28px 70px rgba(2, 23, 55, .2);
+      --display: 'Dancing Script', 'Segoe Script', cursive;
+      --body: 'DM Sans', 'Avenir Next', Avenir, system-ui, sans-serif;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    html {
+      scroll-behavior: smooth;
+    }
+
+    body {
+      margin: 0;
+      min-width: 320px;
+      color: var(--ink);
+      background: #c8f5f7;
+      font-family: var(--body);
+      overflow-x: hidden;
+    }
+
+    button,
+    input,
+    textarea {
+      font: inherit;
+    }
+
+    button {
+      cursor: pointer;
+    }
+
+    [hidden] {
+      display: none !important;
+    }
+
+    .ocean-scene {
+      position: fixed;
+      inset: 0;
+      z-index: -2;
+      overflow: hidden;
+      pointer-events: none;
+      background:
+        radial-gradient(circle at 75% 5%, rgba(173, 255, 250, .9), transparent 27%),
+        linear-gradient(180deg, #d8fbfc 0%, #87dce7 43%, #2476ad 100%);
+    }
+
+    .ocean-scene::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      opacity: .4;
+      background:
+        linear-gradient(116deg, transparent 0 25%, rgba(255,255,255,.36) 25.2% 25.5%, transparent 26% 100%),
+        linear-gradient(67deg, transparent 0 54%, rgba(255,255,255,.23) 54.2% 54.45%, transparent 55% 100%);
+      background-size: 250px 250px, 340px 340px;
+      animation: lightWaves 16s linear infinite;
+    }
+
+    .ocean-floor {
+      position: absolute;
+      left: -5%;
+      right: -5%;
+      bottom: -3%;
+      height: 17%;
+      opacity: .2;
+      border-radius: 50% 50% 0 0;
+      background: #064d73;
+      filter: blur(1px);
+    }
+
+    .ocean-floor::before,
+    .ocean-floor::after {
+      content: '';
+      position: absolute;
+      bottom: 4%;
+      width: 21px;
+      height: 100px;
+      border-radius: 100% 0 100% 0;
+      border-left: 8px solid rgba(181, 252, 219, .65);
+      transform-origin: bottom;
+      animation: seaweed 3.4s ease-in-out infinite alternate;
+    }
+
+    .ocean-floor::before {
+      left: 17%;
+      transform: rotate(-10deg);
+    }
+
+    .ocean-floor::after {
+      right: 22%;
+      height: 76px;
+      animation-delay: -.9s;
+      transform: rotate(12deg);
+    }
+
+    .bubbles,
+    .heart-burst {
+      position: absolute;
+      inset: 0;
+      overflow: hidden;
+    }
+
+    .bubble {
+      position: absolute;
+      bottom: -70px;
+      width: var(--size, 18px);
+      height: var(--size, 18px);
+      left: var(--left, 50%);
+      border: 1px solid rgba(255,255,255,.76);
+      border-radius: 50%;
+      background:
+        radial-gradient(
+          circle at 30% 25%,
+          rgba(255,255,255,.86),
+          rgba(255,255,255,.05) 38%
+        );
+      animation: rise var(--duration, 15s) var(--delay, 0s) linear infinite;
+    }
+
+    .fish,
+    .shark {
+      position: absolute;
+      opacity: .35;
+      filter: drop-shadow(0 5px 8px rgba(7, 54, 93, .12));
+    }
+
+    .fish {
+      width: 50px;
+      height: 23px;
+      border-radius: 68% 45% 58% 65%;
+      background: rgba(8, 95, 140, .6);
+      animation: swim var(--swim, 21s) linear infinite;
+    }
+
+    .fish::before {
+      content: '';
+      position: absolute;
+      left: 10px;
+      top: 6px;
+      width: 4px;
+      height: 4px;
+      background: rgba(238,255,255,.8);
+      border-radius: 50%;
+    }
+
+    .fish::after {
+      content: '';
+      position: absolute;
+      right: -15px;
+      top: 1px;
+      border-top: 11px solid transparent;
+      border-bottom: 11px solid transparent;
+      border-right: 20px solid rgba(8, 95, 140, .58);
+    }
+
+    .fish-one {
+      top: 24%;
+      left: -75px;
+      --swim: 24s;
+    }
+
+    .fish-two {
+      top: 67%;
+      left: -80px;
+      transform: scale(.64);
+      --swim: 18s;
+      animation-delay: -8s;
+    }
+
+    .fish-three {
+      top: 42%;
+      left: -100px;
+      transform: scale(1.22);
+      opacity: .18;
+      --swim: 29s;
+      animation-delay: -14s;
+    }
+
+    .shark {
+      width: 148px;
+      height: 54px;
+      top: 73%;
+      left: -190px;
+      clip-path: polygon(
+        0 50%,
+        12% 32%,
+        36% 21%,
+        48% 0,
+        60% 22%,
+        88% 30%,
+        100% 50%,
+        88% 70%,
+        60% 78%,
+        48% 100%,
+        36% 79%,
+        12% 68%
+      );
+      background: rgba(8, 67, 113, .46);
+      animation: sharkSwim 39s linear infinite;
+    }
+
+    .shark::after {
+      content: '';
+      position: absolute;
+      left: 23%;
+      top: 45%;
+      width: 5px;
+      height: 5px;
+      border-radius: 50%;
+      background: rgba(236, 255, 255, .84);
+    }
+
+    @keyframes rise {
+      to {
+        transform: translate3d(28px, -115vh, 0) scale(1.22);
+        opacity: 0;
+      }
+    }
+
+    @keyframes swim {
+      from {
+        transform: translateX(0) scaleX(1);
+      }
+
+      49% {
+        transform: translateX(calc(100vw + 170px)) scaleX(1);
+      }
+
+      50% {
+        transform: translateX(calc(100vw + 170px)) scaleX(-1);
+      }
+
+      to {
+        transform: translateX(0) scaleX(-1);
+      }
+    }
+
+    @keyframes sharkSwim {
+      from {
+        transform: translateX(0);
+      }
+
+      to {
+        transform: translateX(calc(100vw + 360px));
+      }
+    }
+
+    @keyframes lightWaves {
+      from {
+        background-position: 0 0, 0 0;
+      }
+
+      to {
+        background-position: 250px 40px, -340px 70px;
+      }
+    }
+
+    @keyframes seaweed {
+      to {
+        transform: rotate(13deg) skewX(7deg);
+      }
+    }
+
+    @keyframes float {
+      50% {
+        transform: translateY(-10px) rotate(1deg);
+      }
+    }
+
+    @keyframes popIn {
+      from {
+        opacity: 0;
+        transform: translateY(18px) scale(.97);
+      }
+
+      to {
+        opacity: 1;
+        transform: none;
+      }
+    }
+
+    @keyframes heartUp {
+      0% {
+        transform: translateY(0) scale(.65) rotate(-12deg);
+        opacity: 0;
+      }
+
+      12% {
+        opacity: 1;
+      }
+
+      100% {
+        transform:
+          translateY(-78vh)
+          translateX(var(--drift))
+          scale(1.1)
+          rotate(18deg);
+        opacity: 0;
+      }
+    }
+
+    .app-shell {
+      position: relative;
+      min-height: 100vh;
+    }
+
+    .editor-shell {
+      width: min(1120px, calc(100% - 36px));
+      margin: 0 auto;
+      padding: 55px 0 80px;
+    }
+
+    .editor-hero {
+      display: grid;
+      grid-template-columns: 1.05fr .95fr;
+      gap: 34px;
+      align-items: end;
+      margin-bottom: 25px;
+    }
+
+    .eyebrow,
+    .section-kicker {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      margin: 0 0 14px;
+      color: #0c7892;
+      font-size: .73rem;
+      font-weight: 700;
+      letter-spacing: .15em;
+      text-transform: uppercase;
+    }
+
+    .eyebrow::before,
+    .section-kicker::before {
+      content: '✦';
+      color: #12a5bb;
+    }
+
+    .editor-hero h1 {
+      max-width: 720px;
+      margin: 0;
+      color: var(--navy-900);
+      font-family: var(--display);
+      font-size: clamp(3.35rem, 8vw, 6.4rem);
+      font-weight: 700;
+      line-height: .88;
+      letter-spacing: -.03em;
+    }
+
+    .editor-hero p {
+      max-width: 430px;
+      margin: 0 0 3px auto;
+      color: #195474;
+      line-height: 1.7;
+    }
+
+    .editor-card {
+      overflow: hidden;
+      border: 1px solid rgba(255,255,255,.75);
+      border-radius: 30px;
+      background: rgba(245, 255, 255, .86);
+      box-shadow: var(--shadow);
+      backdrop-filter: blur(18px);
+    }
+
+    .editor-card-head {
+      display: flex;
+      justify-content: space-between;
+      gap: 20px;
+      padding: 26px 30px 21px;
+      border-bottom: 1px solid var(--line);
+    }
+
+    .editor-card-head h2 {
+      margin: 0;
+      color: var(--navy-900);
+      font-size: 1.1rem;
+    }
+
+    .editor-card-head span {
+      color: var(--muted);
+      font-size: .82rem;
+    }
+
+    .form-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 22px 24px;
+      padding: 28px 30px 32px;
+    }
+
+    .field {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      min-width: 0;
+    }
+
+    .field-wide {
+      grid-column: 1 / -1;
+    }
+
+    .field label {
+      color: var(--navy-900);
+      font-size: .83rem;
+      font-weight: 700;
+    }
+
+    .field small {
+      color: var(--muted);
+      font-size: .75rem;
+      line-height: 1.4;
+    }
+
+    .field input[type='text'],
+    .field input[type='date'],
+    .field input[type='url'],
+    .field textarea {
+      width: 100%;
+      border: 1px solid rgba(41, 132, 171, .25);
+      border-radius: 14px;
+      outline: none;
+      background: rgba(255,255,255,.85);
+      color: var(--ink);
+      padding: 13px 14px;
+      transition:
+        border-color .2s,
+        box-shadow .2s,
+        background .2s;
+    }
+
+    .field textarea {
+      min-height: 145px;
+      resize: vertical;
+      line-height: 1.65;
+    }
+
+    .field textarea.tall {
+      min-height: 170px;
+    }
+
+    .field input:focus,
+    .field textarea:focus {
+      border-color: #17a5b9;
+      background: #fff;
+      box-shadow: 0 0 0 4px rgba(23,165,185,.12);
+    }
+
+    .file-drop {
+      position: relative;
+      display: grid;
+      place-items: center;
+      min-height: 106px;
+      padding: 20px;
+      border: 1px dashed rgba(25, 133, 159, .42);
+      border-radius: 16px;
+      background: rgba(213, 249, 250, .48);
+      text-align: center;
+      transition: .2s;
+    }
+
+    .file-drop:hover {
+      background: rgba(193, 244, 246, .85);
+      border-color: #109bb1;
+    }
+
+    .file-drop input {
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      cursor: pointer;
+      opacity: 0;
+    }
+
+    .file-drop strong {
+      display: block;
+      color: #096881;
+      font-size: .9rem;
+    }
+
+    .file-drop span {
+      display: block;
+      margin-top: 5px;
+      color: #45657a;
+      font-size: .75rem;
+    }
+
+    .photo-preview {
+      display: grid;
+      grid-template-columns: repeat(7, 1fr);
+      gap: 8px;
+      margin-top: 11px;
+    }
+
+    .photo-thumb {
+      position: relative;
+      aspect-ratio: 1;
+      overflow: hidden;
+      border-radius: 10px;
+      background: #c4edf1;
+    }
+
+    .photo-thumb img {
+      width: 100%;
+      height: 100%;
+      display: block;
+      object-fit: cover;
+    }
+
+    .photo-count {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-top: 8px;
+      color: var(--muted);
+      font-size: .74rem;
+    }
+
+    .audio-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 12px;
+      align-items: center;
+    }
+
+    .or-divider {
+      color: #7b91a6;
+      font-size: .75rem;
+      text-align: center;
+    }
+
+    .editor-actions {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      gap: 12px;
+      padding: 22px 30px 27px;
+      border-top: 1px solid var(--line);
+      background: rgba(227, 251, 253, .52);
+    }
+
+    .editor-note {
+      flex: 1 1 250px;
+      color: var(--muted);
+      font-size: .77rem;
+      line-height: 1.45;
+    }
+
+    .btn {
+      display: inline-flex;
+      justify-content: center;
+      align-items: center;
+      gap: 9px;
+      min-height: 46px;
+      padding: 0 19px;
+      border: 1px solid transparent;
+      border-radius: 999px;
+      font-weight: 700;
+      transition:
+        transform .2s,
+        box-shadow .2s,
+        background .2s;
+    }
+
+    .btn:hover {
+      transform: translateY(-2px);
+    }
+
+    .btn-primary {
+      color: white;
+      background: linear-gradient(135deg, #0a356f, #087d9d);
+      box-shadow: 0 12px 24px rgba(5, 69, 112, .2);
+    }
+
+    .btn-primary:hover {
+      box-shadow: 0 16px 30px rgba(5, 69, 112, .3);
+    }
+
+    .btn-secondary {
+      color: #0c6b87;
+      border-color: rgba(12, 107, 135, .25);
+      background: rgba(255,255,255,.62);
+    }
+
+    .btn-ghost {
+      color: #0d6680;
+      background: transparent;
+      padding-inline: 12px;
+    }
+
+    .status {
+      width: 100%;
+      min-height: 18px;
+      color: #0a7788;
+      font-size: .8rem;
+    }
+
+    .recipient-shell {
+      width: min(1000px, calc(100% - 28px));
+      margin: 0 auto;
+      padding: 30px 0 90px;
+    }
+
+    .recipient-topbar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 16px;
+      padding: 8px 2px 18px;
+    }
+
+    .brand-mark {
+      display: flex;
+      align-items: center;
+      gap: 9px;
+      color: rgba(5, 50, 89, .8);
+      font-size: .78rem;
+      font-weight: 700;
+      letter-spacing: .13em;
+      text-transform: uppercase;
+    }
+
+    .brand-mark::before {
+      content: '◌';
+      color: #0a849b;
+      font-size: 1.6rem;
+      line-height: 0;
+    }
+
+    .welcome-state {
+      display: grid;
+      place-items: center;
+      min-height: min(670px, calc(100vh - 70px));
+      padding: 35px 0 50px;
+      text-align: center;
+    }
+
+    .welcome-copy {
+      animation: popIn .7s both;
+    }
+
+    .welcome-copy .eyebrow {
+      justify-content: center;
+    }
+
+    .welcome-copy h1 {
+      max-width: 730px;
+      margin: 3px auto 13px;
+      color: var(--navy-900);
+      font-family: var(--display);
+      font-size: clamp(4.2rem, 11vw, 8.3rem);
+      line-height: .78;
+    }
+
+    .welcome-copy p {
+      max-width: 450px;
+      margin: 0 auto 25px;
+      color: #215775;
+      line-height: 1.6;
+    }
+
+    .envelope-wrap {
+      position: relative;
+      width: min(370px, 90vw);
+      height: 260px;
+      margin: 8px auto 31px;
+      perspective: 900px;
+      animation: float 4.6s ease-in-out infinite;
+    }
+
+    .envelope-shadow {
+      position: absolute;
+      bottom: 2px;
+      left: 13%;
+      width: 74%;
+      height: 21px;
+      border-radius: 50%;
+      background: rgba(0, 55, 93, .2);
+      filter: blur(11px);
+    }
+
+    .envelope {
+      position: absolute;
+      inset: 23px 0 25px;
+      transform-style: preserve-3d;
+      filter: drop-shadow(0 19px 16px rgba(4, 44, 85, .19));
+    }
+
+    .envelope-back {
+      position: absolute;
+      inset: 0;
+      z-index: 1;
+      overflow: hidden;
+      border-radius: 14px;
+      background: linear-gradient(145deg, #fff, #dffbfc);
+    }
+
+    .envelope-back::before,
+    .envelope-back::after {
+      content: '';
+      position: absolute;
+      bottom: 0;
+      width: 52%;
+      height: 72%;
+      background: #c7f3f3;
+    }
+
+    .envelope-back::before {
+      left: 0;
+      clip-path: polygon(0 0, 100% 100%, 0 100%);
+    }
+
+    .envelope-back::after {
+      right: 0;
+      clip-path: polygon(100% 0, 100% 100%, 0 100%);
+    }
+
+    .envelope-letter {
+      position: absolute;
+      z-index: 0;
+      left: 10%;
+      right: 10%;
+      top: 5%;
+      height: 100%;
+      border-radius: 10px;
+      background: #fff;
+      box-shadow: 0 2px 9px rgba(10,85,111,.12);
+      transition: transform .8s cubic-bezier(.2,.8,.2,1);
+    }
+
+    .envelope-letter::after {
+      content: '♡';
+      display: grid;
+      place-items: center;
+      height: 100%;
+      color: #42b8bf;
+      font-family: var(--display);
+      font-size: 3.7rem;
+    }
+
+    .envelope-flap {
+      position: absolute;
+      z-index: 3;
+      inset: 0 0 auto;
+      height: 57%;
+      transform-origin: top;
+      border-radius: 14px 14px 0 0;
+      background: linear-gradient(145deg, #ffffff, #cff5f6);
+      clip-path: polygon(0 0, 100% 0, 50% 100%);
+      transition: transform .72s cubic-bezier(.2,.8,.2,1);
+      backface-visibility: hidden;
+    }
+
+    .envelope-seal {
+      position: absolute;
+      z-index: 4;
+      top: 43%;
+      left: 50%;
+      display: grid;
+      place-items: center;
+      width: 54px;
+      height: 54px;
+      border-radius: 50%;
+      color: white;
+      background: #e56e84;
+      box-shadow: 0 5px 13px rgba(192,62,89,.25);
+      font-size: 1.65rem;
+      transform: translate(-50%,-50%);
+      transition: opacity .3s;
+    }
+
+    .envelope.open .envelope-flap {
+      transform: rotateX(180deg);
+    }
+
+    .envelope.open .envelope-letter {
+      transform: translateY(-25%);
+    }
+
+    .envelope.open .envelope-seal {
+      opacity: 0;
+    }
+
+    .letter-content {
+      animation: popIn .8s both;
+    }
+
+    .letter-hero {
+      position: relative;
+      overflow: hidden;
+      padding: clamp(42px, 7vw, 82px) clamp(25px, 7vw, 85px) 72px;
+      border: 1px solid rgba(255,255,255,.82);
+      border-radius: 34px;
+      background:
+        linear-gradient(
+          145deg,
+          rgba(248,255,255,.96),
+          rgba(220,250,251,.84)
+        );
+      box-shadow: var(--shadow);
+      text-align: center;
+    }
+
+    .letter-hero::before,
+    .letter-hero::after {
+      content: '✦';
+      position: absolute;
+      color: rgba(25, 168, 181, .22);
+      font-size: 4rem;
+    }
+
+    .letter-hero::before {
+      top: 26px;
+      left: 7%;
+    }
+
+    .letter-hero::after {
+      right: 8%;
+      bottom: 25px;
+      transform: rotate(20deg);
+    }
+
+    .letter-hero h1 {
+      margin: 0;
+      color: var(--navy-900);
+      font-family: var(--display);
+      font-size: clamp(4rem, 10vw, 7.5rem);
+      line-height: .8;
+    }
+
+    .letter-hero .subline {
+      margin: 22px auto 0;
+      color: #366982;
+      font-size: .95rem;
+    }
+
+    .days-counter {
+      display: inline-flex;
+      align-items: baseline;
+      gap: 8px;
+      margin-top: 27px;
+      padding: 12px 19px;
+      border: 1px solid rgba(16, 143, 161, .18);
+      border-radius: 999px;
+      color: #086d80;
+      background: rgba(255,255,255,.65);
+    }
+
+    .days-counter strong {
+      color: #0b365f;
+      font-size: 1.55rem;
+    }
+
+    .content-section {
+      margin-top: 25px;
+      padding: clamp(28px, 5vw, 54px);
+      border: 1px solid rgba(255,255,255,.75);
+      border-radius: 29px;
+      background: rgba(247,255,255,.88);
+      box-shadow: 0 17px 48px rgba(6, 58, 94, .12);
+    }
+
+    .section-title {
+      margin: 0 0 20px;
+      color: var(--navy-900);
+      font-family: var(--display);
+      font-size: clamp(2.7rem, 6vw, 4.3rem);
+      line-height: .9;
+    }
+
+    .letter-text {
+      color: #31556c;
+      font-size: 1rem;
+      line-height: 1.9;
+      white-space: pre-wrap;
+    }
+
+    .letter-text:empty::before {
+      content: 'Esta carta todavía no tiene palabras…';
+      color: var(--muted);
+      font-style: italic;
+    }
+
+    .gallery-shell {
+      position: relative;
+    }
+
+    .gallery-frame {
+      position: relative;
+      overflow: hidden;
+      width: min(100%, 640px);
+      aspect-ratio: 4 / 5;
+      margin-inline: auto;
+      border-radius: 22px;
+      background: linear-gradient(135deg, #c5f3f3, #84d4e3);
+    }
+
+    .gallery-frame::after {
+      content: '';
+      position: absolute;
+      inset: 0;
+      pointer-events: none;
+      background:
+        linear-gradient(
+          180deg,
+          transparent 63%,
+          rgba(3, 30, 66, .23)
+        );
+    }
+
+    .gallery-image {
+      width: 100%;
+      height: 100%;
+      display: block;
+      object-fit: contain;
+      background: #0d5174;
+      opacity: 0;
+      transition: opacity .38s, transform .5s;
+    }
+
+    .gallery-image.ready {
+      opacity: 1;
+    }
+
+    .gallery-empty {
+      display: grid;
+      place-items: center;
+      height: 100%;
+      min-height: 240px;
+      padding: 25px;
+      color: #3f7e91;
+      text-align: center;
+    }
+
+    .gallery-empty span {
+      display: block;
+      margin-bottom: 8px;
+      font-family: var(--display);
+      font-size: 3rem;
+      color: #42aab7;
+    }
+
+    .gallery-arrow {
+      position: absolute;
+      z-index: 2;
+      top: 50%;
+      display: grid;
+      place-items: center;
+      width: 44px;
+      height: 44px;
+      border: 1px solid rgba(255,255,255,.66);
+      border-radius: 50%;
+      color: var(--navy-900);
+      background: rgba(255,255,255,.8);
+      box-shadow: 0 7px 15px rgba(3, 49, 80, .15);
+      transform: translateY(-50%);
+    }
+
+    .gallery-arrow:hover {
+      background: white;
+      transform: translateY(-50%) scale(1.05);
+    }
+
+    .gallery-arrow.prev {
+      left: 15px;
+    }
+
+    .gallery-arrow.next {
+      right: 15px;
+    }
+
+    .gallery-meta {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 15px;
+      margin-top: 13px;
+    }
+
+    .gallery-index {
+      color: #4b7187;
+      font-size: .8rem;
+    }
+
+    .dots {
+      display: flex;
+      justify-content: center;
+      flex-wrap: wrap;
+      gap: 7px;
+    }
+
+    .dot {
+      width: 7px;
+      height: 7px;
+      padding: 0;
+      border: 0;
+      border-radius: 999px;
+      background: #acdce1;
+      transition: .2s;
+    }
+
+    .dot.active {
+      width: 22px;
+      background: #138a9e;
+    }
+
+    .plans-list {
+      display: grid;
+      gap: 11px;
+      padding: 0;
+      margin: 0;
+      list-style: none;
+    }
+
+    .plans-list li {
+      display: flex;
+      gap: 13px;
+      align-items: flex-start;
+      padding: 15px 16px;
+      border-radius: 15px;
+      color: #31556c;
+      line-height: 1.55;
+      background: rgba(220, 248, 249, .62);
+    }
+
+    .plans-list li::before {
+      content: '♡';
+      flex: 0 0 auto;
+      color: #e16c81;
+      font-size: 1.2rem;
+      line-height: 1.15;
+    }
+
+    .plans-empty {
+      color: var(--muted);
+      font-style: italic;
+    }
+
+    .music-card {
+      display: flex;
+      align-items: center;
+      gap: 17px;
+      padding: 16px;
+      border-radius: 18px;
+      color: white;
+      background: linear-gradient(135deg, #092b60, #097c98);
+      box-shadow: 0 12px 25px rgba(6, 57, 102, .19);
+    }
+
+    .music-orb {
+      display: grid;
+      place-items: center;
+      flex: 0 0 auto;
+      width: 49px;
+      height: 49px;
+      border: 5px solid rgba(255,255,255,.22);
+      border-radius: 50%;
+      font-size: 1.15rem;
+    }
+
+    .music-copy {
+      min-width: 0;
+      flex: 1;
+    }
+
+    .music-label {
+      margin: 0 0 4px;
+      font-size: .73rem;
+      letter-spacing: .13em;
+      opacity: .75;
+      text-transform: uppercase;
+    }
+
+    .music-name {
+      margin: 0;
+      overflow: hidden;
+      font-weight: 700;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+
+    .music-controls {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      min-width: 45%;
+    }
+
+    .play-btn {
+      display: grid;
+      place-items: center;
+      flex: 0 0 auto;
+      width: 39px;
+      height: 39px;
+      border: 0;
+      border-radius: 50%;
+      color: #073058;
+      background: white;
+    }
+
+    .progress {
+      width: 100%;
+      height: 4px;
+      accent-color: var(--aqua);
+      cursor: pointer;
+    }
+
+    .music-empty {
+      color: var(--muted);
+      font-size: .9rem;
+    }
+
+    .letter-footer {
+      padding: 45px 10px 0;
+      color: rgba(7, 56, 92, .75);
+      text-align: center;
+    }
+
+    .letter-footer p {
+      margin: 0;
+      font-family: var(--display);
+      font-size: 2.35rem;
+    }
+
+    .letter-footer small {
+      display: block;
+      margin-top: 4px;
+      font-size: .72rem;
+      letter-spacing: .15em;
+      text-transform: uppercase;
+    }
+
+    .heart {
+      position: absolute;
+      bottom: -35px;
+      left: var(--left);
+      z-index: 20;
+      color: #ef7190;
+      font-size: var(--size);
+      text-shadow: 0 3px 11px rgba(174, 60, 91, .25);
+      animation: heartUp var(--duration) var(--delay) ease-out forwards;
+    }
+
+    @media (max-width: 800px) {
+      .editor-hero {
+        grid-template-columns: 1fr;
+        gap: 15px;
+      }
+
+      .editor-hero p {
+        margin: 0;
+      }
+
+      .form-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .field-wide {
+        grid-column: auto;
+      }
+
+      .photo-preview {
+        grid-template-columns: repeat(7, 1fr);
+      }
+
+      .music-card {
+        align-items: flex-start;
+        flex-wrap: wrap;
+      }
+
+      .music-controls {
+        width: 100%;
+        min-width: 0;
+      }
+    }
+
+    @media (max-width: 560px) {
+      .editor-shell {
+        width: min(100% - 22px, 1120px);
+        padding-top: 32px;
+      }
+
+      .editor-hero h1 {
+        font-size: clamp(3.25rem, 17vw, 5.5rem);
+      }
+
+      .editor-card-head,
+      .form-grid,
+      .editor-actions {
+        padding-left: 19px;
+        padding-right: 19px;
+      }
+
+      .editor-card-head {
+        display: block;
+      }
+
+      .editor-card-head span {
+        display: block;
+        margin-top: 6px;
+      }
+
+      .audio-grid {
+        grid-template-columns: 1fr;
+        gap: 8px;
+      }
+
+      .or-divider {
+        display: none;
+      }
+
+      .photo-preview {
+        grid-template-columns: repeat(5, 1fr);
+      }
+
+      .recipient-shell {
+        width: min(100% - 18px, 1000px);
+        padding-top: 15px;
+      }
+
+      .recipient-topbar {
+        padding-inline: 5px;
+      }
+
+      .recipient-topbar .btn {
+        min-height: 38px;
+        padding-inline: 13px;
+        font-size: .78rem;
+      }
+
+      .welcome-state {
+        min-height: calc(100vh - 65px);
+      }
+
+      .welcome-copy h1 {
+        font-size: clamp(3.8rem, 19vw, 6.4rem);
+      }
+
+      .envelope-wrap {
+        transform: scale(.87);
+        margin-top: -4px;
+        margin-bottom: 18px;
+      }
+
+      .letter-hero h1 {
+        font-size: clamp(3.6rem, 18vw, 6rem);
+      }
+
+      .content-section {
+        padding: 24px 18px;
+        border-radius: 23px;
+      }
+
+      .gallery-frame {
+        aspect-ratio: 4 / 5;
+      }
+
+      .gallery-arrow {
+        width: 38px;
+        height: 38px;
+      }
+
+      .gallery-arrow.prev {
+        left: 9px;
+      }
+
+      .gallery-arrow.next {
+        right: 9px;
+      }
+
+      .gallery-meta {
+        display: block;
+      }
+
+      .gallery-index {
+        display: block;
+        margin-bottom: 10px;
+        text-align: center;
+      }
+
+      .days-counter {
+        font-size: .88rem;
+      }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      *,
+      *::before,
+      *::after {
+        scroll-behavior: auto !important;
+        animation-duration: .01ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: .01ms !important;
+      }
+    }
+  </style>
+</head>
+
+<body data-embedded="false">
+  <div class="ocean-scene" aria-hidden="true">
+    <div class="bubbles">
+      <i class="bubble" style="--size:12px;--left:8%;--duration:14s;--delay:-2s"></i>
+      <i class="bubble" style="--size:22px;--left:19%;--duration:19s;--delay:-11s"></i>
+      <i class="bubble" style="--size:8px;--left:29%;--duration:13s;--delay:-7s"></i>
+      <i class="bubble" style="--size:31px;--left:41%;--duration:22s;--delay:-15s"></i>
+      <i class="bubble" style="--size:15px;--left:58%;--duration:16s;--delay:-4s"></i>
+      <i class="bubble" style="--size:9px;--left:69%;--duration:12s;--delay:-1s"></i>
+      <i class="bubble" style="--size:26px;--left:82%;--duration:20s;--delay:-13s"></i>
+      <i class="bubble" style="--size:11px;--left:93%;--duration:15s;--delay:-8s"></i>
+    </div>
+
+    <span class="fish fish-one"></span>
+    <span class="fish fish-two"></span>
+    <span class="fish fish-three"></span>
+    <span class="shark"></span>
+    <div class="ocean-floor"></div>
+  </div>
+
+  <main class="app-shell">
+    <section id="editorShell" class="editor-shell">
+      <div class="editor-hero">
+        <div>
+          <p class="eyebrow">Constructor de cartas</p>
+          <h1>Una historia de amor bajo el mar.</h1>
+        </div>
+
+        <p>
+          Personalizá cada detalle, mirá una vista previa y descargá
+          un único archivo listo para compartir.
+        </p>
+      </div>
+
+      <div class="editor-card">
+        <div class="editor-card-head">
+          <h2>Tu carta de amor</h2>
+          <span>Todo lo que completes queda guardado en el archivo final.</span>
+        </div>
+
+        <form id="letterForm" novalidate>
+          <div class="form-grid">
+            <div class="field">
+              <label for="startDate">¿Cuándo empezó su historia?</label>
+              <input id="startDate" name="startDate" type="date" required />
+              <small>Se usará para calcular los días que llevan juntos.</small>
+            </div>
+
+            <div class="field">
+              <label for="letterTitle">Título para ella</label>
+              <input
+                id="letterTitle"
+                name="letterTitle"
+                type="text"
+                value="Mi novia hermosa"
+                maxlength="80"
+              />
+              <small>Podés dejar el título romántico o escribir uno propio.</small>
+            </div>
+
+            <div class="field field-wide">
+              <label for="mainLetter">Tu carta principal</label>
+
+              <textarea
+                id="mainLetter"
+                name="mainLetter"
+                class="tall"
+                placeholder="Escribí acá todo eso que querés decirle…"
+                required
+              ></textarea>
+
+              <small>
+                Los saltos de línea se conservarán en la carta final.
+              </small>
+            </div>
+
+            <div class="field field-wide">
+              <label for="photoInput">Sus recuerdos en fotos</label>
+
+              <div class="file-drop">
+                <input
+                  id="photoInput"
+                  name="photoInput"
+                  type="file"
+                  accept="image/*"
+                  multiple
+                />
+
+                <div>
+                  <strong>+ Elegir fotos</strong>
+                  <span>
+                    Podés seleccionar 14 o más imágenes desde tu dispositivo.
+                  </span>
+                </div>
+              </div>
+
+              <div
+                id="photoPreview"
+                class="photo-preview"
+                aria-live="polite"
+              ></div>
+
+              <div class="photo-count">
+                <span id="photoCount">Todavía no elegiste fotos.</span>
+                <span>JPG · PNG · WEBP</span>
+              </div>
+            </div>
+
+            <div class="field field-wide">
+              <label for="plans">
+                Cosas que quiero que hagamos juntos
+              </label>
+
+              <textarea
+                id="plans"
+                name="plans"
+                placeholder="Una idea por línea:
+Ver el amanecer en la playa
+Viajar a un lugar nuevo
+Cocinar nuestra receta favorita"
+              ></textarea>
+
+              <small>
+                Escribí una idea por línea; cada una tendrá su propio detalle
+                en la lista.
+              </small>
+            </div>
+
+            <div class="field field-wide">
+              <label>Música para acompañar la lectura</label>
+
+              <div class="audio-grid">
+                <div class="file-drop">
+                  <input
+                    id="audioInput"
+                    name="audioInput"
+                    type="file"
+                    accept="audio/mpeg,audio/mp3,audio/*"
+                    aria-label="Subir archivo de audio MP3"
+                  />
+
+                  <div>
+                    <strong>♫ Subir un MP3</strong>
+                    <span>Se incrustará dentro del HTML descargado.</span>
+                  </div>
+                </div>
+
+                <div class="or-divider">o</div>
+
+                <input
+                  id="audioUrl"
+                  name="audioUrl"
+                  type="url"
+                  placeholder="Pegar enlace a una canción"
+                  aria-label="Enlace a una canción"
+                />
+              </div>
+
+              <small id="audioStatus">
+                Podés usar un archivo local o un enlace público.
+              </small>
+            </div>
+          </div>
+
+          <div class="editor-actions">
+            <div class="editor-note">
+              Tip: si subís el audio, la carta funcionará sin depender de
+              archivos externos. Los navegadores pueden pedirle a ella que
+              toque “Play” por primera vez.
+            </div>
+
+            <button
+              id="previewBtn"
+              class="btn btn-secondary"
+              type="button"
+            >
+              ◉ Vista previa
+            </button>
+
+            <button
+              id="downloadBtn"
+              class="btn btn-primary"
+              type="button"
+            >
+              ♡ Generar y descargar
+            </button>
+
+            <div
+              id="status"
+              class="status"
+              role="status"
+              aria-live="polite"
+            ></div>
+          </div>
+        </form>
+      </div>
+    </section>
+
+    <section id="recipientShell" class="recipient-shell" hidden>
+      <div class="recipient-topbar">
+        <div class="brand-mark">Carta de amor</div>
+
+        <button
+          id="backToEditorBtn"
+          class="btn btn-ghost editor-only"
+          type="button"
+        >
+          ← Volver al editor
+        </button>
+      </div>
+
+      <div id="welcomeState" class="welcome-state">
+        <div class="welcome-copy">
+          <p class="eyebrow">Hay algo para vos</p>
+
+          <h1>
+            Una carta<br />
+            desde el océano
+          </h1>
+
+          <p>
+            Entre olas, recuerdos y un pedacito de mi corazón preparé esto
+            para vos.
+          </p>
+
+          <div class="envelope-wrap">
+            <div class="envelope-shadow"></div>
+
+            <div
+              id="envelope"
+              class="envelope"
+              aria-label="Sobre cerrado"
+            >
+              <div class="envelope-letter"></div>
+              <div class="envelope-back"></div>
+              <div class="envelope-flap"></div>
+              <div class="envelope-seal">♡</div>
+            </div>
+          </div>
+
+          <button
+            id="openLetterBtn"
+            class="btn btn-primary"
+            type="button"
+          >
+            Abrir carta&nbsp; ✦
+          </button>
+        </div>
+      </div>
+
+      <div id="letterContent" class="letter-content" hidden>
+        <div class="heart-burst" aria-hidden="true"></div>
+
+        <section class="letter-hero">
+          <p class="eyebrow">Para el amor de mi vida</p>
+
+          <h1 id="viewTitle">Mi novia hermosa</h1>
+
+          <p class="subline">
+            El lugar más lindo siempre es a tu lado.
+          </p>
+
+          <div class="days-counter">
+            <strong id="daysCount">0</strong>
+            <span id="daysLabel">días juntos</span>
+          </div>
+        </section>
+
+        <section class="content-section">
+          <p class="section-kicker">Lo que siento por vos</p>
+          <h2 class="section-title">Con todo mi corazón</h2>
+          <div id="viewLetter" class="letter-text"></div>
+        </section>
+
+        <section class="content-section">
+          <p class="section-kicker">Nuestros recuerdos</p>
+          <h2 class="section-title">Pedacitos de nosotros</h2>
+
+          <div class="gallery-shell" id="galleryShell">
+            <div class="gallery-frame" id="galleryFrame">
+              <div class="gallery-empty" id="galleryEmpty">
+                <div>
+                  <span>♡</span>
+                  Acá van a vivir sus recuerdos.
+                </div>
+              </div>
+
+              <img
+                id="galleryImage"
+                class="gallery-image"
+                alt="Recuerdo de nuestra historia"
+              />
+
+              <button
+                id="prevPhoto"
+                class="gallery-arrow prev"
+                type="button"
+                aria-label="Foto anterior"
+              >
+                ←
+              </button>
+
+              <button
+                id="nextPhoto"
+                class="gallery-arrow next"
+                type="button"
+                aria-label="Foto siguiente"
+              >
+                →
+              </button>
+            </div>
+
+            <div class="gallery-meta">
+              <span id="galleryIndex" class="gallery-index"></span>
+
+              <div
+                id="galleryDots"
+                class="dots"
+                role="group"
+                aria-label="Seleccionar foto"
+              ></div>
+            </div>
+          </div>
+        </section>
+
+        <section class="content-section">
+          <p class="section-kicker">Nuestro próximo capítulo</p>
+          <h2 class="section-title">Quiero vivir esto con vos</h2>
+          <ul id="viewPlans" class="plans-list"></ul>
+        </section>
+
+        <section class="content-section">
+          <p class="section-kicker">Una canción para vos</p>
+          <h2 class="section-title">Dale play a lo nuestro</h2>
+          <div id="musicContainer"></div>
+        </section>
+
+        <footer class="letter-footer">
+          <p>Te elegiría en todos los océanos.</p>
+          <small>Hecho con amor · siempre nosotros</small>
+        </footer>
+      </div>
+    </section>
+  </main>
+
+  <script id="appScript">
+    (() => {
+      'use strict';
+
+      const $ = (selector, root = document) =>
+        root.querySelector(selector);
+
+      const $$ = (selector, root = document) =>
+        [...root.querySelectorAll(selector)];
+
+      const editorShell = $('#editorShell');
+      const recipientShell = $('#recipientShell');
+      const form = $('#letterForm');
+      const status = $('#status');
+      const photoInput = $('#photoInput');
+      const audioInput = $('#audioInput');
+      const audioUrl = $('#audioUrl');
+      const preview = $('#photoPreview');
+      const audioStatus = $('#audioStatus');
+
+      let activeConfig = null;
+      let currentPhoto = 0;
+      let opened = false;
+      let touchStartX = 0;
+
+      const embeddedConfig =
+        window.EMBEDDED_LETTER || null;
+
+      function escapeHtml(value) {
+        return String(value ?? '').replace(
+          /[&<>'"]/g,
+          char => ({
+            '&': '&amp;',
+            '<': '&lt;',
+            '>': '&gt;',
+            "'": '&#39;',
+            '"': '&quot;'
+          }[char])
+        );
+      }
+
+      function localDateFromInput(value) {
+        if (!value) return null;
+
+        const [year, month, day] = value
+          .split('-')
+          .map(Number);
+
+        const date =
+          new Date(year, month - 1, day);
+
+        return Number.isNaN(date.getTime())
+          ? null
+          : date;
+      }
+
+      function daysTogether(value) {
+        const start =
+          localDateFromInput(value);
+
+        if (!start) return 0;
+
+        const today = new Date();
+
+        const todayUtc = Date.UTC(
+          today.getFullYear(),
+          today.getMonth(),
+          today.getDate()
+        );
+
+        const startUtc = Date.UTC(
+          start.getFullYear(),
+          start.getMonth(),
+          start.getDate()
+        );
+
+        return Math.max(
+          0,
+          Math.floor(
+            (todayUtc - startUtc) / 86400000
+          )
+        );
+      }
+
+      function readFileAsDataUrl(file) {
+        return new Promise((resolve, reject) => {
+          if (!file) return resolve('');
+
+          const reader = new FileReader();
+
+          reader.onload = () => resolve(reader.result);
+
+          reader.onerror = () => reject(
+            reader.error ||
+            new Error('No se pudo leer el archivo.')
+          );
+
+          reader.readAsDataURL(file);
+        });
+      }
+
+      function getBasicConfig() {
+        return {
+          startDate: $('#startDate').value,
+          title:
+            $('#letterTitle').value.trim() ||
+            'Mi novia hermosa',
+          letter: $('#mainLetter').value.trim(),
+          plans: $('#plans').value.trim(),
+          audioUrl: audioUrl.value.trim(),
+          photos: [],
+          audio: ''
+        };
+      }
+
+      async function collectConfig() {
+        const config =
+          getBasicConfig();
+
+        const files =
+          [...(photoInput.files || [])];
+
+        const audioFile =
+          audioInput.files &&
+          audioInput.files[0];
+
+        config.photos =
+          await Promise.all(
+            files.map(readFileAsDataUrl)
+          );
+
+        if (audioFile) {
+          config.audio =
+            await readFileAsDataUrl(audioFile);
+        }
+
+        return config;
+      }
+
+      function validForPreview() {
+        if (!$('#startDate').value) {
+          setStatus(
+            'Elegí la fecha en que empezó su historia.',
+            true
+          );
+
+          $('#startDate').focus();
+          return false;
+        }
+
+        if (!$('#mainLetter').value.trim()) {
+          setStatus(
+            'Escribí unas palabras para que la carta tenga tu voz.',
+            true
+          );
+
+          $('#mainLetter').focus();
+          return false;
+        }
+
+        return true;
+      }
+
+      function setStatus(message, isError = false) {
+        if (!status) return;
+
+        status.textContent = message;
+
+        status.style.color = isError
+          ? '#b05262'
+          : '#0a7788';
+      }
+
+      function updatePhotoPreview() {
+        const files =
+          [...(photoInput.files || [])];
+
+        preview.innerHTML = '';
+
+        files.slice(0, 28).forEach(file => {
+          const thumb =
+            document.createElement('div');
+
+          thumb.className =
+            'photo-thumb';
+
+          const img =
+            document.createElement('img');
+
+          img.alt = file.name;
+          img.src =
+            URL.createObjectURL(file);
+
+          img.onload = () => {
+            URL.revokeObjectURL(img.src);
+          };
+
+          thumb.appendChild(img);
+          preview.appendChild(thumb);
+        });
+
+        $('#photoCount').textContent =
+          files.length
+            ? `${files.length} foto${files.length === 1 ? '' : 's'} seleccionada${files.length === 1 ? '' : 's'}.`
+            : 'Todavía no elegiste fotos.';
+      }
+
+      function updateAudioStatus() {
+        if (
+          audioInput.files &&
+          audioInput.files[0]
+        ) {
+          audioStatus.textContent =
+            `MP3 listo para incrustar: ${audioInput.files[0].name}`;
+        } else if (audioUrl.value.trim()) {
+          audioStatus.textContent =
+            'Se usará el enlace de la canción. Necesita conexión a internet.';
+        } else {
+          audioStatus.textContent =
+            'Podés usar un archivo local o un enlace público.';
+        }
+      }
+
+      function renderPlans(plans) {
+        const list =
+          $('#viewPlans');
+
+        const items =
+          String(plans || '')
+            .split(/\r?\n/)
+            .map(item => item.trim())
+            .filter(Boolean);
+
+        list.innerHTML =
+          items.length
+            ? items
+                .map(item => `<li>${escapeHtml(item)}</li>`)
+                .join('')
+            : '<li class="plans-empty">Todavía nos esperan un montón de aventuras por inventar.</li>';
+      }
+
+      function renderGallery(photos) {
+        const image =
+          $('#galleryImage');
+
+        const empty =
+          $('#galleryEmpty');
+
+        const dots =
+          $('#galleryDots');
+
+        const hasPhotos =
+          Array.isArray(photos) &&
+          photos.length > 0;
+
+        currentPhoto = 0;
+        dots.innerHTML = '';
+
+        if (!hasPhotos) {
+          empty.hidden = false;
+          image.hidden = true;
+          $('#galleryIndex').textContent = '';
+          $('#prevPhoto').hidden = true;
+          $('#nextPhoto').hidden = true;
+          return;
+        }
+
+        empty.hidden = true;
+        image.hidden = false;
+        $('#prevPhoto').hidden =
+          photos.length < 2;
+        $('#nextPhoto').hidden =
+          photos.length < 2;
+
+        photos.forEach((photo, index) => {
+          const dot =
+            document.createElement('button');
+
+          dot.type = 'button';
+
+          dot.className =
+            `dot${index === 0 ? ' active' : ''}`;
+
+          dot.setAttribute(
+            'aria-label',
+            `Ver foto ${index + 1}`
+          );
+
+          dot.addEventListener(
+            'click',
+            () => showPhoto(index)
+          );
+
+          dots.appendChild(dot);
+        });
+
+        showPhoto(0);
+      }
+
+      function showPhoto(index) {
+        if (
+          !activeConfig ||
+          !activeConfig.photos ||
+          !activeConfig.photos.length
+        ) {
+          return;
+        }
+
+        const photos =
+          activeConfig.photos;
+
+        currentPhoto =
+          (index + photos.length) %
+          photos.length;
+
+        const image =
+          $('#galleryImage');
+
+        image.classList.remove('ready');
+
+        image.onload = () => {
+          image.classList.add('ready');
+        };
+
+        image.src =
+          photos[currentPhoto];
+
+        image.alt =
+          `Recuerdo ${currentPhoto + 1} de ${photos.length}`;
+
+        $('#galleryIndex').textContent =
+          `${currentPhoto + 1} / ${photos.length}`;
+
+        $$('.dot').forEach(
+          (dot, dotIndex) => {
+            dot.classList.toggle(
+              'active',
+              dotIndex === currentPhoto
+            );
+          }
+        );
+      }
+
+      function renderMusic(config) {
+        const container =
+          $('#musicContainer');
+
+        const source =
+          config.audio ||
+          config.audioUrl;
+
+        if (!source) {
+          container.innerHTML =
+            '<div class="music-empty">Elegí una canción en el editor para que suene de fondo.</div>';
+
+          return;
+        }
+
+        container.innerHTML = `
+          <div class="music-card">
+            <div class="music-orb">♫</div>
+
+            <div class="music-copy">
+              <p class="music-label">Nuestra canción</p>
+              <p class="music-name">Una melodía para acompañarte</p>
+            </div>
+
+            <div class="music-controls">
+              <button
+                class="play-btn"
+                id="playMusic"
+                type="button"
+                aria-label="Reproducir canción"
+              >
+                ▶
+              </button>
+
+              <input
+                class="progress"
+                id="musicProgress"
+                type="range"
+                min="0"
+                max="100"
+                value="0"
+                step="0.1"
+                aria-label="Progreso de la canción"
+              />
+            </div>
+
+            <audio
+              id="musicAudio"
+              preload="metadata"
+              src="${escapeHtml(source)}"
+            ></audio>
+          </div>
+        `;
+
+        const audio =
+          $('#musicAudio');
+
+        const play =
+          $('#playMusic');
+
+        const progress =
+          $('#musicProgress');
+
+        play.addEventListener(
+          'click',
+          async () => {
+            if (audio.paused) {
+              try {
+                await audio.play();
+              } catch (error) {
+                setStatus(
+                  'El navegador necesita una interacción para reproducir la música.',
+                  false
+                );
+              }
+            } else {
+              audio.pause();
+            }
+          }
+        );
+
+        audio.addEventListener(
+          'play',
+          () => {
+            play.textContent = '❚❚';
+
+            play.setAttribute(
+              'aria-label',
+              'Pausar canción'
+            );
+          }
+        );
+
+        audio.addEventListener(
+          'pause',
+          () => {
+            play.textContent = '▶';
+
+            play.setAttribute(
+              'aria-label',
+              'Reproducir canción'
+            );
+          }
+        );
+
+        audio.addEventListener(
+          'timeupdate',
+          () => {
+            progress.value =
+              audio.duration
+                ? (audio.currentTime /
+                    audio.duration) * 100
+                : 0;
+          }
+        );
+
+        progress.addEventListener(
+          'input',
+          () => {
+            if (audio.duration) {
+              audio.currentTime =
+                (Number(progress.value) / 100) *
+                audio.duration;
+            }
+          }
+        );
+      }
+
+      function renderView(config) {
+        activeConfig = config;
+
+        $('#viewTitle').textContent =
+          config.title ||
+          'Mi novia hermosa';
+
+        $('#viewLetter').textContent =
+          config.letter ||
+          '';
+
+        $('#daysCount').textContent =
+          daysTogether(config.startDate);
+
+        $('#daysLabel').textContent =
+          daysTogether(config.startDate) === 1
+            ? 'día juntos'
+            : 'días juntos';
+
+        renderGallery(
+          config.photos || []
+        );
+
+        renderPlans(
+          config.plans || ''
+        );
+
+        renderMusic(config);
+
+        const title =
+          config.title ||
+          'Mi novia hermosa';
+
+        document.title =
+          `${title} · Carta de amor`;
+      }
+
+      function burstHearts() {
+        const container =
+          $('.heart-burst');
+
+        container.innerHTML = '';
+
+        for (
+          let index = 0;
+          index < 30;
+          index += 1
+        ) {
+          const heart =
+            document.createElement('span');
+
+          heart.className =
+            'heart';
+
+          heart.textContent =
+            index % 4 === 0
+              ? '♥'
+              : '♡';
+
+          heart.style.setProperty(
+            '--left',
+            `${Math.random() * 100}%`
+          );
+
+          heart.style.setProperty(
+            '--size',
+            `${12 + Math.random() * 23}px`
+          );
+
+          heart.style.setProperty(
+            '--drift',
+            `${-70 + Math.random() * 140}px`
+          );
+
+          heart.style.setProperty(
+            '--duration',
+            `${2.5 + Math.random() * 2.8}s`
+          );
+
+          heart.style.setProperty(
+            '--delay',
+            `${Math.random() * .8}s`
+          );
+
+          container.appendChild(heart);
+        }
+
+        window.setTimeout(
+          () => {
+            container.innerHTML = '';
+          },
+          6500
+        );
+      }
+
+      function openLetter() {
+        if (opened) return;
+
+        opened = true;
+
+        $('#envelope').classList.add('open');
+        burstHearts();
+
+        const audio =
+          $('#musicAudio');
+
+        if (audio) {
+          audio.play().catch(() => {
+            /*
+              Algunos navegadores bloquean el autoplay
+              con sonido. El botón de reproducción
+              seguirá disponible.
+            */
+          });
+        }
+
+        window.setTimeout(
+          () => {
+            $('#welcomeState').hidden = true;
+            $('#letterContent').hidden = false;
+
+            $('#letterContent').scrollIntoView({
+              behavior: 'smooth',
+              block: 'start'
+            });
+          },
+          620
+        );
+      }
+
+      function enterPreview(config) {
+        renderView(config);
+
+        editorShell.hidden = true;
+        recipientShell.hidden = false;
+
+        $('#backToEditorBtn').hidden = false;
+        $('#welcomeState').hidden = false;
+        $('#letterContent').hidden = true;
+
+        $('#envelope').classList.remove('open');
+
+        opened = false;
+
+        window.scrollTo({
+          top: 0,
+          behavior: 'smooth'
+        });
+      }
+
+      function leavePreview() {
+        recipientShell.hidden = true;
+        editorShell.hidden = false;
+
+        window.scrollTo({
+          top: 0,
+          behavior: 'smooth'
+        });
+      }
+
+      function encodeUtf8Base64(value) {
+        const bytes =
+          new TextEncoder().encode(value);
+
+        let binary = '';
+
+        bytes.forEach(byte => {
+          binary += String.fromCharCode(byte);
+        });
+
+        return btoa(binary);
+      }
+
+      function createExportHtml(config) {
+        const clone =
+          document.documentElement.cloneNode(true);
+
+        const cloneEditor =
+          clone.querySelector('#editorShell');
+
+        if (cloneEditor) {
+          cloneEditor.remove();
+        }
+
+        const cloneRecipient =
+          clone.querySelector('#recipientShell');
+
+        if (cloneRecipient) {
+          cloneRecipient.hidden = false;
+        }
+
+        const cloneBody =
+          clone.querySelector('body');
+
+        cloneBody.dataset.embedded =
+          'true';
+
+        cloneBody.classList.add(
+          'embedded-letter'
+        );
+
+        const backButton =
+          clone.querySelector('#backToEditorBtn');
+
+        if (backButton) {
+          backButton.remove();
+        }
+
+        const oldData =
+          clone.querySelector('#embeddedData');
+
+        if (oldData) {
+          oldData.remove();
+        }
+
+        const dataScript =
+          document.createElement('script');
+
+        dataScript.id =
+          'embeddedData';
+
+        dataScript.textContent =
+          `window.EMBEDDED_LETTER = JSON.parse(atob('${encodeUtf8Base64(JSON.stringify(config))}'));`;
+
+        const script =
+          clone.querySelector('#appScript');
+
+        script.parentNode.insertBefore(
+          dataScript,
+          script
+        );
+
+        return '<!doctype html>\n' +
+          clone.outerHTML;
+      }
+
+      function downloadHtml(config) {
+        const html =
+          createExportHtml(config);
+
+        const blob =
+          new Blob(
+            [html],
+            {
+              type: 'text/html;charset=utf-8'
+            }
+          );
+
+        const url =
+          URL.createObjectURL(blob);
+
+        const anchor =
+          document.createElement('a');
+
+        anchor.href = url;
+
+        anchor.download =
+          'carta-de-amor-oceano.html';
+
+        document.body.appendChild(anchor);
+
+        anchor.click();
+
+        anchor.remove();
+
+        window.setTimeout(
+          () => {
+            URL.revokeObjectURL(url);
+          },
+          1000
+        );
+      }
+
+      photoInput?.addEventListener(
+        'change',
+        updatePhotoPreview
+      );
+
+      audioInput?.addEventListener(
+        'change',
+        updateAudioStatus
+      );
+
+      audioUrl?.addEventListener(
+        'input',
+        updateAudioStatus
+      );
+
+      $('#openLetterBtn')?.addEventListener(
+        'click',
+        openLetter
+      );
+
+      $('#backToEditorBtn')?.addEventListener(
+        'click',
+        leavePreview
+      );
+
+      $('#prevPhoto').addEventListener(
+        'click',
+        () => showPhoto(currentPhoto - 1)
+      );
+
+      $('#nextPhoto').addEventListener(
+        'click',
+        () => showPhoto(currentPhoto + 1)
+      );
+
+      $('#galleryFrame').addEventListener(
+        'touchstart',
+        event => {
+          touchStartX =
+            event.changedTouches[0].screenX;
+        },
+        {
+          passive: true
+        }
+      );
+
+      $('#galleryFrame').addEventListener(
+        'touchend',
+        event => {
+          const delta =
+            event.changedTouches[0].screenX -
+            touchStartX;
+
+          if (Math.abs(delta) > 45) {
+            showPhoto(
+              currentPhoto +
+              (delta < 0 ? 1 : -1)
+            );
+          }
+        },
+        {
+          passive: true
+        }
+      );
+
+      $('#previewBtn')?.addEventListener(
+        'click',
+        async () => {
+          if (!validForPreview()) return;
+
+          const button =
+            $('#previewBtn');
+
+          button.disabled = true;
+          button.textContent =
+            'Preparando…';
+
+          try {
+            enterPreview(
+              await collectConfig()
+            );
+
+            setStatus('');
+          } catch (error) {
+            setStatus(
+              'No se pudieron cargar los archivos. Probá de nuevo.',
+              true
+            );
+          } finally {
+            button.disabled = false;
+            button.textContent =
+              '◉ Vista previa';
+          }
+        }
+      );
+
+      $('#downloadBtn')?.addEventListener(
+        'click',
+        async () => {
+          if (!validForPreview()) return;
+
+          const button =
+            $('#downloadBtn');
+
+          button.disabled = true;
+
+          button.textContent =
+            'Incrustando archivos…';
+
+          try {
+            const config =
+              await collectConfig();
+
+            downloadHtml(config);
+
+            setStatus(
+              '¡Listo! Se descargó tu carta autocontenida.'
+            );
+          } catch (error) {
+            setStatus(
+              'No se pudieron incrustar los archivos. Probá de nuevo.',
+              true
+            );
+          } finally {
+            button.disabled = false;
+
+            button.textContent =
+              '♡ Generar y descargar';
+          }
+        }
+      );
+
+      function boot() {
+        if (embeddedConfig) {
+          if (editorShell) {
+            editorShell.remove();
+          }
+
+          if (recipientShell) {
+            recipientShell.hidden = false;
+          }
+
+          const backButton =
+            $('#backToEditorBtn');
+
+          if (backButton) {
+            backButton.remove();
+          }
+
+          renderView(
+            embeddedConfig
+          );
+
+          return;
+        }
+
+        if (recipientShell) {
+          recipientShell.hidden = true;
+        }
+      }
+
+      boot();
+    })();
+  </script>
+</body>
+</html>
